@@ -8,10 +8,6 @@ const port = 4000;
 
 app.use(cors());
 
-app.listen(port, () => {
-  console.log(`CORS-enabled Server started on port ${port}`);
-});
-
 const startpoint = "https://oauth.reddit.com";
 
 app.get("/access_token", async (req, res, next) => {
@@ -72,4 +68,8 @@ app.get("/hot", async (req, res, next) => {
       .header(error.response.header)
       .json(error.response.data);
   }
+});
+
+app.listen(port, () => {
+  console.log(`CORS-enabled Server started on port ${port}`);
 });
