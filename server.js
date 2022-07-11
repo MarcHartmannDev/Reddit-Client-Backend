@@ -70,6 +70,27 @@ app.get("/hot", async (req, res, next) => {
   }
 });
 
+app.get("/user", async (req, res, next) => {
+  try {
+    const user = await axios.get(
+      `${startpoint}/api/user_data_by_account_ids?ids=${req.query.user}`,
+      {
+        headers: {
+          Authorization: `Bearer ${req.query.token}`,
+        },
+      }
+    );
+
+    res.status(200).json(user.data);
+  } catch (error) {
+    res
+      .status(error.response.status)
+      .header(error.response.header)
+      .json(error.response.data);
+    console.log(error.response.data);
+  }
+});
+
 app.listen(port, () => {
   console.log(`CORS-enabled Server started on port ${port}`);
 });
