@@ -10,6 +10,10 @@ app.use(cors());
 
 const startpoint = "https://oauth.reddit.com";
 
+app.get("/", (req, res, next) => {
+  res.send("Hello World!");
+});
+
 app.get("/access_token", async (req, res, next) => {
   try {
     const requestToken = await axios.post(
