@@ -7,40 +7,45 @@ require("dotenv").config();
 const app = express();
 const port = process.env.PORT;
 
+const checkToken = async (req, res, next) => {
+  if (!process.env.TOKEN) {
+    try {
+      const newToken = await axios.post(
+        "https://www.reddit.com/api/v1/access_token",
+        "grant_type=client_credentials",
+        {
+          auth: {
+            username: process.env.APP_ID,
+            password: process.env.SECRET_KEY,
+          },
+          "Content-Type": "application/x-www-form-urlencoded",
+        }
+      );
+
+      process.env.TOKEN = newToken.data.access_token;
+
+      setTimeout(() => {
+        process.env.TOKEN = "";
+      }, newToken.data.expires_in * 1000);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  next();
+};
+
 app.use(cors());
 app.use(
   morgan(
     ':remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length]'
   )
 );
+app.use(checkToken);
 
 const startpoint = "https://oauth.reddit.com";
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
-});
-
-app.get("/api/access_token", async (req, res) => {
-  try {
-    const requestToken = await axios.post(
-      "https://www.reddit.com/api/v1/access_token",
-      "grant_type=client_credentials",
-      {
-        auth: {
-          username: process.env.APP_ID,
-          password: process.env.SECRET_KEY,
-        },
-        "Content-Type": "application/x-www-form-urlencoded",
-      }
-    );
-
-    res.status(200).json(requestToken.data);
-  } catch (error) {
-    res
-      .status(error.response.status)
-      .header(error.response.header)
-      .json(error.response.data);
-  }
 });
 
 app.get("/api/popular", async (req, res) => {
@@ -49,7 +54,7 @@ app.get("/api/popular", async (req, res) => {
       `${startpoint}/subreddits/popular?limit=${req.query.limit}`,
       {
         headers: {
-          Authorization: `Bearer ${req.query.token}`,
+          Authorization: `Bearer ${process.env.TOKEN}`,
         },
       }
     );
@@ -67,7 +72,7 @@ app.get("/api/hot", async (req, res) => {
   try {
     const top = await axios.get(`${startpoint}/hot`, {
       headers: {
-        Authorization: `Bearer ${req.query.token}`,
+        Authorization: `Bearer ${process.env.TOKEN}`,
       },
     });
 
@@ -86,7 +91,7 @@ app.get("/api/user", async (req, res) => {
       `${startpoint}/api/user_data_by_account_ids?ids=${req.query.user}`,
       {
         headers: {
-          Authorization: `Bearer ${req.query.token}`,
+          Authorization: `Bearer ${process.env.TOKEN}`,
         },
       }
     );
