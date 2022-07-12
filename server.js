@@ -70,7 +70,7 @@ app.get("/api/popular", async (req, res) => {
 
 app.get("/api/hot", async (req, res) => {
   try {
-    const top = await axios.get(`${startpoint}/hot`, {
+    const top = await axios.get(`${startpoint}/hot?g=DE`, {
       headers: {
         Authorization: `Bearer ${process.env.TOKEN}`,
       },
@@ -104,6 +104,24 @@ app.get("/api/user", async (req, res) => {
       .json(error.response.data);
     console.log(error.response.data);
   }
+});
+
+app.get("/api/comments", async (req, res) => {
+  axios
+    .get(`${startpoint}/comments?article=${req.query.article}`, {
+      headers: {
+        Authorization: `Bearer ${process.env.TOKEN}`,
+      },
+    })
+    .then((response) => {
+      res.status(200).json(response.data.data.children);
+    })
+    .catch((err) => {
+      res
+        .status(err.response.status)
+        .header(err.response.header)
+        .json(err.response.data);
+    });
 });
 
 app.listen(port, () => {
