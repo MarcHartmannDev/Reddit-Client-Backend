@@ -14,7 +14,7 @@ app.get("/", (req, res, next) => {
   res.send("Hello World!");
 });
 
-app.get("/access_token", async (req, res, next) => {
+app.get("/api/access_token", async (req, res, next) => {
   try {
     const requestToken = await axios.post(
       "https://www.reddit.com/api/v1/access_token",
@@ -37,7 +37,7 @@ app.get("/access_token", async (req, res, next) => {
   }
 });
 
-app.get("/popular", async (req, res, next) => {
+app.get("/api/popular", async (req, res, next) => {
   try {
     const popular = await axios.get(
       `${startpoint}/subreddits/popular?limit=${req.query.limit}`,
@@ -57,7 +57,7 @@ app.get("/popular", async (req, res, next) => {
   }
 });
 
-app.get("/hot", async (req, res, next) => {
+app.get("/api/hot", async (req, res, next) => {
   try {
     const top = await axios.get(`${startpoint}/hot`, {
       headers: {
@@ -74,7 +74,7 @@ app.get("/hot", async (req, res, next) => {
   }
 });
 
-app.get("/user", async (req, res, next) => {
+app.get("/api/user", async (req, res, next) => {
   try {
     const user = await axios.get(
       `${startpoint}/api/user_data_by_account_ids?ids=${req.query.user}`,
