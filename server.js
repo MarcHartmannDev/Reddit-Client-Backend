@@ -1,20 +1,26 @@
 const express = require("express");
 const axios = require("axios");
 const cors = require("cors");
+const morgan = require("morgan");
 require("dotenv").config();
 
 const app = express();
 const port = process.env.PORT;
 
 app.use(cors());
+app.use(
+  morgan(
+    ':remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length]'
+  )
+);
 
 const startpoint = "https://oauth.reddit.com";
 
-app.get("/", (req, res, next) => {
+app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
-app.get("/api/access_token", async (req, res, next) => {
+app.get("/api/access_token", async (req, res) => {
   try {
     const requestToken = await axios.post(
       "https://www.reddit.com/api/v1/access_token",
@@ -37,7 +43,7 @@ app.get("/api/access_token", async (req, res, next) => {
   }
 });
 
-app.get("/api/popular", async (req, res, next) => {
+app.get("/api/popular", async (req, res) => {
   try {
     const popular = await axios.get(
       `${startpoint}/subreddits/popular?limit=${req.query.limit}`,
@@ -57,7 +63,7 @@ app.get("/api/popular", async (req, res, next) => {
   }
 });
 
-app.get("/api/hot", async (req, res, next) => {
+app.get("/api/hot", async (req, res) => {
   try {
     const top = await axios.get(`${startpoint}/hot`, {
       headers: {
@@ -74,7 +80,7 @@ app.get("/api/hot", async (req, res, next) => {
   }
 });
 
-app.get("/api/user", async (req, res, next) => {
+app.get("/api/user", async (req, res) => {
   try {
     const user = await axios.get(
       `${startpoint}/api/user_data_by_account_ids?ids=${req.query.user}`,
