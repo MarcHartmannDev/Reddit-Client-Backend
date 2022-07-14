@@ -70,7 +70,7 @@ app.get("/api/popular", async (req, res) => {
 
 app.get("/api/hot", async (req, res) => {
   try {
-    const top = await axios.get(`${startpoint}/hot?g=DE`, {
+    const top = await axios.get(`${startpoint}/hot?geo_filter=DE`, {
       headers: {
         Authorization: `Bearer ${process.env.TOKEN}`,
       },
